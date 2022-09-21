@@ -85,7 +85,7 @@ class CheckAuthForm(cherrypy.Tool):
 
         # Clear session when browsing /logout
         if request.path_info == logout_url or request.path_info.startswith(logout_url):
-            cherrypy.session.clear()
+            self.logout()
             raise cherrypy.HTTPRedirect('/')
 
         # Check if login
@@ -110,6 +110,13 @@ class CheckAuthForm(cherrypy.Tool):
         cherrypy.session[LOGIN_PERSISTENT] = persistent
         cherrypy.session[SESSION_KEY] = username
         cherrypy.session[LOGIN_TIME] = cherrypy.session.now()
+        # Generate a new session id
+        cherrypy.session.regenerate()
+
+    def logout(self):
+        # Clear session date and generate a new session id
+        cherrypy.session.clear()
+        cherrypy.session.regenerate()
 
 
 cherrypy.tools.auth_form = CheckAuthForm()
